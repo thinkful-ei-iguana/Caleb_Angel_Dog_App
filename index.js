@@ -1,47 +1,44 @@
-let STORE = [];
+let STORE = {};
 
-let validateInput = function (input) {
-  if (input <= 0 || input > 50){
-    return 3;
+const grabData = function (response) {
+  STORE.message = response.message;
+  STORE.code = response.code;
+};
+
+const handleResponse = function () {
+  if (STORE.code === 404 ){
+    console.error(STORE.message);
   } else {
-    return input;
+    let hTMLstring = generateHTML(STORE.message);
+    renderHTML(hTMLstring);
   }
 };
 
-const grabArray = function (response) {
-  STORE = response.message;
-};
-
 const generateHTML = function (dogImageArray) {
-  let hTMLstring = '';
-  dogImageArray.forEach(image => {
-    hTMLstring += `
-    <img src="${image}" alt="random-dog">`;
-  });
-  return hTMLstring;
+   let randomGenerator = Math.floor(Math.random() * (Math.floor(dogImageArray.length)));
+   console.log(randomGenerator);
+   return `<img src="${dogImageArray[randomGenerator]}" alt="random-dog">`;
+  
 };
 
 const renderHTML = function (hTMLstring) {
   $('#dog-image-container').html(hTMLstring);
 };
 
-let getDogImages = function (number) {
-  fetch('https://dog.ceo/api/breeds/image/random/' + number)
+let getDogImages = function (breed) {
+  fetch(`https://dog.ceo/api/breed/${breed}/images`)
     .then(response => response.json())
     .then(responseJson => 
-      grabArray(responseJson))
-    .then(function() {
-      let hTMLstring = generateHTML(STORE);
-      renderHTML(hTMLstring);
-    });
+      grabData(responseJson))
+    .then(handleResponse);
 };
 
 const handleNewItemSubmit = function () {
   $('#Dog-App-Random-Images').submit(function (event) {
     event.preventDefault();
-    let numDogs = $('.Random-Dog-Photo-App').val();
+    let dogBreed = $('.Random-Dog-Photo-App').val();
     $('.Random-Dog-Photo-App').val('');
-    getDogImages (validateInput(numDogs));
+    getDogImages (dogBreed);
   });
 };
 
