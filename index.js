@@ -1,32 +1,48 @@
+let STORE = [];
+
 let validateInput = function (input) {
   if (input <= 0 || input > 50){
-    throw 'number must be greater than 0 and less than or equal to 50';
+    return 3;
   } else {
-    return true;
+    return input;
   }
 };
 
+const grabArray = function (response) {
+  STORE = response.message;
+};
+
+const generateHTML = function (dogImageArray) {
+  let hTMLstring = '';
+  dogImageArray.forEach(image => {
+    hTMLstring += `
+    <img src="${image}" alt="random-dog">`;
+  });
+  return hTMLstring;
+};
+
+const renderHTML = function (hTMLstring) {
+  $('#dog-image-container').html(hTMLstring);
+};
+
 let getDogImages = function (number) {
-  console.log('function is running');
-  fetch('https://dog.ceo/api/breeds/image/random/3')
+  fetch('https://dog.ceo/api/breeds/image/random/' + number)
     .then(response => response.json())
     .then(responseJson => 
-      console.log(responseJson))
-    .catch(error => alert('Something went wrong. Try again later.'));
+      grabArray(responseJson))
+    .then(function() {
+      let hTMLstring = generateHTML(STORE);
+      renderHTML(hTMLstring);
+    });
 };
 
 const handleNewItemSubmit = function () {
   $('#Dog-App-Random-Images').submit(function (event) {
     event.preventDefault();
-    const numDogs = $('.Random-Dog-Photo-App').val();
+    let numDogs = $('.Random-Dog-Photo-App').val();
     $('.Random-Dog-Photo-App').val('');
-    console.log(numDogs);
-    // validateInput(numDogs);
-    console.log(validateInput(numDogs));
-    if (validateInput(numDogs) === true) {
-      getDogImages (numDogs);
-    }
+    getDogImages (validateInput(numDogs));
   });
 };
 
-handleNewItemSubmit();
+$(handleNewItemSubmit());
