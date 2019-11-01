@@ -25,15 +25,17 @@ const renderHTML = function (hTMLstring) {
   $('#dog-image-container').html(hTMLstring);
 };
 
+let handleAfterFetch = function () {
+  let hTMLstring = generateHTML(STORE);
+  renderHTML(hTMLstring);
+};
+
 let getDogImages = function (number) {
   fetch('https://dog.ceo/api/breeds/image/random/' + number)
     .then(response => response.json())
     .then(responseJson => 
       grabArray(responseJson))
-    .then(function() {
-      let hTMLstring = generateHTML(STORE);
-      renderHTML(hTMLstring);
-    });
+    .then(handleAfterFetch);
 };
 
 const handleNewItemSubmit = function () {
